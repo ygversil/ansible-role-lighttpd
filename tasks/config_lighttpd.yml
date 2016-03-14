@@ -8,3 +8,18 @@
     mode: 0644
   notify:
     - restart lighttpd
+
+- name: config_lighttpd | configuring lighttpd modules
+  template:
+    src: "{{ item }}.j2"
+    dest: "/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart lighttpd
+  with_items:
+    - etc/lighttpd/modules.conf
+    - etc/lighttpd/conf.d/fastcgi.conf
+  when: >
+        ansible_os_family == "RedHat"
