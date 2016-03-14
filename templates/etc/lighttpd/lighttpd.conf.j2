@@ -1,0 +1,33 @@
+server.modules = (
+{% for item in lighttpd_server_modules %}
+  "{{ item }}",
+{% endfor %}
+)
+
+server.document-root        = "{{ lighttpd_default_root }}"
+server.upload-dirs          = ( "/var/cache/lighttpd/uploads" )
+server.errorlog             = "/var/log/lighttpd/error.log"
+server.pid-file             = "/var/run/lighttpd.pid"
+{% if ansible_os_family == "Debian" %}
+server.username             = "www-data"
+server.groupname            = "www-data"
+{% elif ansible_os_family == "RedHat" %}
+server.username             = "lighttpd"
+server.groupname            = "lighttpd"
+{% endif %}
+server.port                 = {{ lighttpd_server_port }}
+
+
+index-file.names            = ( {% for item in lighttpd_index_filenames %}"{{ item }}"{% if not loop.last %}, {% endif %}{% endfor %} )
+url.access-deny             = ( {% for item in lighttpd_url_access_deny %}"{{ item }}"{% if not loop.last %}, {% endif %}{% endfor %} )
+static-file.exclude-extensions = ( {% for item in lighttpd_static_file_exclude_extensions %}"{{ item }}"{% if not loop.last %}, {% endif %}{% endfor %} )
+
+compress.cache-dir          = "/var/cache/lighttpd/compress/"
+compress.filetype           = ( {% for item in lighttpd_compress_filetype %}"{{ item }}"{% if not loop.last %}, {% endif %}{% endfor %} )
+
+# default listening port for IPv6 falls back to the IPv4 port
+## Use ipv6 if available
+#include_shell "/usr/share/lighttpd/use-ipv6.pl " + server.port
+{% for item in lighttpd_include_shell %}
+include_shell "{{ item }}"
+{% endfor %}

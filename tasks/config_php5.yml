@@ -1,0 +1,47 @@
+---
+- name: config_php5 | installing php5 (if enabled)
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - php5-fpm
+    - php5
+  when: lighttpd_enable_php5
+
+- name: config_php5 | configuring php5
+  template:
+    src: "etc/php5/fpm/php.ini.j2"
+    dest: "{{ php5_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: config_php5 | configuring lighttpd for php5
+  template:
+    src: "etc/lighttpd/conf-available/15-fastcgi-php.conf.j2"
+    dest: "/etc/lighttpd/conf-available/15-fastcgi-php.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart lighttpd
+
+- name: config_php5 | enabling php5 modules for lighttpd
+  command: "{{ item.cmd }}"
+  args:
+    creates: "{{ item.creates }}"
+  with_items:
+    - cmd: 'lighttpd-enable-mod fastcgi'
+      creates: '/etc/lighttpd/conf-enabled/10-fastcgi.conf'
+    - cmd: 'lighttpd-enable-mod fastcgi-php'
+      creates: '/etc/lighttpd/conf-enabled/15-fastcgi-php.conf'
+  notify:
+    - restart lighttpd
+
+- name: config_php5 | installing php5 xcache (if-enabled)
+  apt:
+    name: "php5-xcache"
+    state: present
+  notify:
+    - restart lighttpd
+  when: lighttpd_enable_php5_xcache

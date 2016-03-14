@@ -1,0 +1,10 @@
+---
+- name: config_lighttpd | configuring lighttpd
+  template:
+    src: "etc/lighttpd/lighttpd.conf.j2"
+    dest: "{{ lighttpd_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart lighttpd
