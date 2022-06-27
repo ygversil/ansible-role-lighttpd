@@ -1,6 +1,6 @@
 ---
 - name: redhat | enabling EPEL repo
-  yum:
+  ansible.builtin.yum:
     name: epel-release
     state: present
   become: true
@@ -9,7 +9,7 @@
   when: ansible_distribution != "Fedora"
 
 - name: redhat | installing lighttpd
-  yum:
+  ansible.builtin.yum:
     name: lighttpd
     state: present
   become: true
@@ -18,7 +18,7 @@
   when: ansible_distribution != "Fedora"
 
 - name: redhat | installing lighttpd
-  dnf:
+  ansible.builtin.dnf:
     name: lighttpd
     state: present
   become: true
@@ -27,7 +27,7 @@
   when: ansible_distribution == "Fedora"
 
 - name: redhat | ensuring lighttpd is enabled and started
-  service:
+  ansible.builtin.service:
     name: lighttpd
     state: started
     enabled: true

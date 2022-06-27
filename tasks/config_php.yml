@@ -1,6 +1,6 @@
 ---
 - name: config_php | installing php (if-enabled)
-  apt:
+  ansible.builtin.apt:
     name:
       [
         "{{ 'php' + lighttpd_php_version }}",
@@ -15,7 +15,7 @@
     ansible_os_family == "Debian"
 
 - name: config_php | installing php (if-enabled)
-  yum:
+  ansible.builtin.yum:
     name: ["lighttpd-fastcgi", "php", "php-cli", "php-fpm"]
     state: present
   become: true
@@ -26,7 +26,7 @@
     ansible_distribution != "Fedora"
 
 - name: config_php | installing php (if-enabled)
-  dnf:
+  ansible.builtin.dnf:
     name: ["lighttpd-fastcgi", "php", "php-cli", "php-fpm"]
     state: present
   become: true
@@ -37,7 +37,7 @@
     ansible_distribution == "Fedora"
 
 - name: config_php | configuring php
-  template:
+  ansible.builtin.template:
     src: "{{ 'etc/php' + lighttpd_php_version + '/fpm/php.ini.j2' }}"
     dest: "{{ lighttpd_php_path + '/fpm/php.ini' }}"
     owner: root
@@ -48,7 +48,7 @@
     ansible_os_family == "Debian"
 
 - name: config_php | configuring php
-  template:
+  ansible.builtin.template:
     src: "{{ 'etc/php' + lighttpd_php_version + '/fpm/php.ini.j2' }}"
     dest: /etc/php.ini
     owner: root
@@ -59,7 +59,7 @@
     ansible_os_family == "RedHat"
 
 - name: config_php | configuring php
-  template:
+  ansible.builtin.template:
     src: etc/php-fpm.d/www.conf.j2
     dest: /etc/php-fpm.d/www.conf
     owner: root
@@ -72,7 +72,7 @@
     ansible_os_family == "RedHat"
 
 - name: config_php | ensuring php-fpm is enabled on boot and started
-  service:
+  ansible.builtin.service:
     name: php-fpm
     state: started
     enabled: true
@@ -81,7 +81,7 @@
     ansible_os_family == "RedHat"
 
 - name: config_php | configuring lighttpd for php
-  template:
+  ansible.builtin.template:
     src: etc/lighttpd/conf-available/15-fastcgi-php.conf.j2
     dest: /etc/lighttpd/conf-available/15-fastcgi-php.conf
     owner: root
@@ -94,7 +94,7 @@
     ansible_os_family == "Debian"
 
 - name: config_php | enabling php modules for lighttpd
-  command: "{{ item.cmd }}"
+  ansible.builtin.command: "{{ item.cmd }}"
   args:
     creates: "{{ item.creates }}"
   become: true
@@ -109,7 +109,7 @@
     ansible_os_family == "Debian"
 
 - name: config_php | installing php xcache (if-enabled)
-  apt:
+  ansible.builtin.apt:
     name: "{{ 'php' + lighttpd_php_version + '-xcache' }}"
     state: present
   become: true
@@ -124,7 +124,7 @@
     lighttpd_enable_php_xcache
 
 - name: config_php | installing php xcache (if-enabled)
-  yum:
+  ansible.builtin.yum:
     name: ["php-xcache", "xcache-admin"]
     state: present
   become: true
@@ -138,7 +138,7 @@
     lighttpd_enable_php_xcache
 
 - name: config_php | installing php xcache (if-enabled)
-  dnf:
+  ansible.builtin.dnf:
     name: ["php-xcache", "xcache-admin"]
     state: present
   become: true
