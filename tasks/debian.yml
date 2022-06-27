@@ -1,6 +1,6 @@
 ---
 - name: debian | installing lighttpd
-  apt:
+  ansible.builtin.apt:
     name: lighttpd
     state: present
   register: result
